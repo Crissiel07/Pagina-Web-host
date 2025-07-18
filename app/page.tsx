@@ -100,7 +100,7 @@ export default function Portfolio() {
               <div className="absolute -inset-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 blur-xl opacity-70"></div>
               <div className="relative aspect-square rounded-xl overflow-hidden border border-zinc-800">
                 <img
-                  src="/placeholder.svg?height=600&width=600"
+                  src="/img/nosotros.png?height=600&width=600"
                   alt="Shine Kyaw Kyaw Aung"
                   className="w-full h-full object-cover"
                 />
@@ -294,21 +294,21 @@ export default function Portfolio() {
               title="Sistema de Barbería"
               description="Aplicación web para gestión de citas, control de disponibilidad y seguimiento del historial de clientes. Incluye sistema de pagos y recordatorios automáticos."
               tags={["Next.js", "React", "Node.js", "MongoDB"]}
-              image="/placeholder.svg?height=400&width=600"
+              image="/img/barberia.jpg?height=400&width=600"
               demoUrl="#contact"
             />
             <ProjectCard
               title="Estancia Digital"
               description="Plataforma integral para gestión de fincas ganaderas. Control de producción de leche y carne, registro de ganado y trazabilidad en tiempo real."
               tags={["React", "Node.js", "PostgreSQL", "IoT"]}
-              image="/placeholder.svg?height=400&width=600"
+              image="/img/estancia.jpg?height=400&width=600"
               demoUrl="#contact"
             />
             <ProjectCard
               title="Sistema de Acceso"
               description="Sistema de control de acceso mediante códigos QR. Integración con sistema administrativo universitario para verificación de pagos y validación de identidad."
               tags={["Next.js", "TypeScript", "QR", "API REST"]}
-              image="/placeholder.svg?height=400&width=600"
+              image="/img/acceso.jpg?height=400&width=600"
               demoUrl="#contact"
             />
 
