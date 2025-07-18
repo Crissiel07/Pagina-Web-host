@@ -28,7 +28,7 @@ export function FloatingNav() {
   }, [])
 
   const navItems = [
-    { name: "Nosotros", href: "#about" },
+    { name: "nosotros", href: "#about" },
     { name: "Planes", href: "#planes" },
     { name: "Proyectos", href: "#projects" },
     { name: "Proceso", href: "#experience" },

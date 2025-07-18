@@ -5,9 +5,7 @@ export const metadata: Metadata = {
   title: 'Protovex',
   description: 'Desarrollo web',
   generator: 'Protovex',
-  icons: {
-    icon: '/favicon.ico',
-  },
+  
 }
 
 export default function RootLayout({
