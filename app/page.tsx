@@ -293,21 +293,21 @@ export default function Portfolio() {
             <ProjectCard
               title="Sistema de Barbería"
               description="Aplicación web para gestión de citas, control de disponibilidad y seguimiento del historial de clientes. Incluye sistema de pagos y recordatorios automáticos."
-              tags={["Next.js", "React", "Node.js", "MongoDB"]}
+              tags={["HTML", "CSS", "JS", "PHP", "MySQL"]}
               image="/img/barberia.jpg?height=400&width=600"
               demoUrl="#contact"
             />
             <ProjectCard
               title="Estancia Digital"
               description="Plataforma integral para gestión de fincas ganaderas. Control de producción de leche y carne, registro de ganado y trazabilidad en tiempo real."
-              tags={["React", "Node.js", "PostgreSQL", "IoT"]}
+              tags={["Next.js", "Node.js", "React", "MongoBD"]}
               image="/img/estancia.jpg?height=400&width=600"
               demoUrl="#contact"
             />
             <ProjectCard
               title="Sistema de Acceso"
               description="Sistema de control de acceso mediante códigos QR. Integración con sistema administrativo universitario para verificación de pagos y validación de identidad."
-              tags={["Next.js", "TypeScript", "QR", "API REST"]}
+              tags={["Express","Ejs","MongoBD","Node.js"]}
               image="/img/acceso.jpg?height=400&width=600"
               demoUrl="#contact"
             />
