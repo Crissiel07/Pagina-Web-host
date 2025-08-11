@@ -12,6 +12,7 @@ import { useMobile } from "@/hooks/use-mobile"
 export function FloatingNav() {
   const [isVisible, setIsVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [active, setActive] = useState<string>("#about")
   const isMobile = useMobile()
 
   useEffect(() => {
@@ -27,8 +28,30 @@ export function FloatingNav() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    const ids = ["about", "planes", "projects", "experience", "contact"]; 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio - a.intersectionRatio));
+        if (visible[0]) {
+          setActive(`#${visible[0].target.id}`);
+        }
+      },
+      { root: null, rootMargin: "0px 0px -50% 0px", threshold: [0.1, 0.25, 0.5, 0.75] }
+    );
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const navItems = [
-    { name: "nosotros", href: "#about" },
+    { name: "Nosotros", href: "#about" },
     { name: "Planes", href: "#planes" },
     { name: "Proyectos", href: "#projects" },
     { name: "Proceso", href: "#experience" },
@@ -73,7 +96,7 @@ export function FloatingNav() {
               </Button>
             </div>
           ) : (
-            <div className="relative flex items-center gap-1">
+            <nav className="flex items-center gap-1">
               <Link href="/" className="flex items-center mr-4">
                 <Image
                   src="/img/logodark.png"
@@ -83,23 +106,38 @@ export function FloatingNav() {
                   className="h-8 w-auto"
                 />
               </Link>
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="px-3 py-1 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-                  onClick={handleNavClick}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              <ul className="flex items-center gap-1.5 bg-zinc-900/50 backdrop-blur-xl ring-1 ring-white/10 rounded-full px-2.5 py-1.5 shadow-md">
+                {navItems.map((item) => {
+                  const isActive = active === item.href;
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={`relative group inline-flex h-8 px-3 items-center justify-center rounded-full text-sm leading-none transition-colors duration-300 ${
+                          isActive ? "text-amber-300" : "text-zinc-300 hover:text-white"
+                        }`}
+                        onClick={handleNavClick}
+                      >
+                        <span className="relative inline-block text-center">
+                          {item.name}
+                          <span
+                            className={`pointer-events-none absolute left-0 -bottom-0.5 h-px w-full origin-center scale-x-0 bg-gradient-to-r from-amber-500 to-orange-500 transition-transform duration-300 ${
+                              isActive ? "scale-x-100" : "group-hover:scale-x-100"
+                            }`}
+                          />
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
               <Button
                 size="sm"
                 className="ml-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-500 border-0"
               >
                 Resume
               </Button>
-            </div>
+            </nav>
           )}
         </div>
       </motion.div>

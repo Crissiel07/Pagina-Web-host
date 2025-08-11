@@ -14,6 +14,7 @@ import { SectionHeading } from "@/components/section-heading"
 import { GlassmorphicCard } from "@/components/glassmorphic-card"
 import { ResponsiveHero, MobileLogo } from "@/components/responsive-hero"
 import { ContactButton } from "@/components/contact-button"
+import { TechCarousel } from "@/components/tech-carousel"
 import Image from "next/image"
 
 export default function Portfolio() {
@@ -143,6 +144,13 @@ export default function Portfolio() {
           </div>
         </div>
       </section>
+
+      <TechCarousel />
+
+      {/* Divider: subtle dotted grid */}
+      <div className="relative h-24">
+        <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_center,_#ffffff_1px,_transparent_1.5px)] [background-size:20px_20px]"></div>
+      </div>
 
       {/* Planes Section */}
       <section id="planes" className="py-32 relative">
@@ -596,7 +604,7 @@ export default function Portfolio() {
               />
             </Link>
             <p className="text-sm text-zinc-500 mt-2">
-              © {new Date().getFullYear()} Protovex. Todos los derechos reservados.
+              &copy; {new Date().getFullYear()} Protovex. Todos los derechos reservados.
             </p>
           </div>
           <div className="flex gap-4">
