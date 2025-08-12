@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const technologies = [
   { name: "JavaScript", icon: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript" className="w-10 h-10" loading="lazy" draggable="false" />, color: "from-yellow-400 to-yellow-600" },
@@ -19,63 +19,112 @@ const technologies = [
 
 export function TechCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const animationRef = useRef<number>();
+  const touchStartX = useRef<number>(0);
+  const touchStartScrollLeft = useRef<number>(0);
+  const timeoutRef = useRef<number>();
+  const touchMoveThreshold = 5; // Pixels threshold to consider a drag vs tap
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
-    let scrollAmount = 0;
-    const scrollStep = 1;
-    const scrollInterval = 30;
-
-    const autoScroll = () => {
-      scrollAmount += scrollStep;
-      
-      // Si llegamos al final, reiniciamos
-      if (scrollAmount >= scrollContainer.scrollWidth / 2) {
-        scrollAmount = 0;
+    const scroll = () => {
+      if (!isPaused && !isUserInteracting) {
+        scrollContainer.scrollLeft += 1;
+        
+        // Reset when we've scrolled through half the content (since we duplicated it)
+        const maxScroll = scrollContainer.scrollWidth / 2;
+        if (scrollContainer.scrollLeft >= maxScroll) {
+          scrollContainer.scrollLeft = 0;
+        }
       }
-      
-      scrollContainer.scrollLeft = scrollAmount;
+       
+      animationRef.current = window.requestAnimationFrame(scroll);
     };
 
-    const interval = setInterval(autoScroll, scrollInterval);
-
-    // Pausar en hover
-    const handleMouseEnter = () => clearInterval(interval);
-    const handleMouseLeave = () => {
-      clearInterval(interval);
-      setInterval(autoScroll, scrollInterval);
-    };
-
-    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
-    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+    animationRef.current = window.requestAnimationFrame(scroll);
 
     return () => {
-      clearInterval(interval);
-      scrollContainer?.removeEventListener('mouseenter', handleMouseEnter);
-      scrollContainer?.removeEventListener('mouseleave', handleMouseLeave);
+      if (animationRef.current) {
+        window.cancelAnimationFrame(animationRef.current);
+      }
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
     };
-  }, []);
+  }, [isPaused, isUserInteracting]);
+
+  // Touch event handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartScrollLeft.current = scrollRef.current?.scrollLeft || 0;
+    setIsUserInteracting(true);
+    setIsDragging(false); // Reset drag state on touch start
+    
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!scrollRef.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touchStartX.current - touch.clientX;
+    
+    // Only set dragging if moved more than threshold
+    if (Math.abs(deltaX) > touchMoveThreshold && !isDragging) {
+      setIsDragging(true);
+    }
+    
+    scrollRef.current.scrollLeft = touchStartScrollLeft.current + deltaX;
+  };
+
+  const handleTouchEnd = () => {
+    // Resume auto-scroll after a brief delay
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
+    
+    // Reset dragging state
+    setIsDragging(false);
+    
+    timeoutRef.current = window.setTimeout(() => {
+      setIsUserInteracting(false);
+    }, 2000);
+  };
 
   return (
     <section className="py-20 relative z-10 overflow-hidden bg-gradient-to-b from-zinc-900/50 to-transparent">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-300 to-amber-200">
               Tecnologías que Dominamos
             </span>
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Utilizamos las tecnologías más modernas y confiables para crear soluciones robustas y escalables
+            Utilizamos las mejores herramientas y frameworks para crear soluciones robustas y escalables
           </p>
         </div>
 
-        <div 
+        <div
           ref={scrollRef}
-          className="flex gap-6 overflow-hidden whitespace-nowrap"
-          style={{ 
+          className={`flex gap-6 overflow-x-auto scrollbar-hide pb-4 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            scrollBehavior: 'auto',
+            WebkitOverflowScrolling: 'touch',
             maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
             WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
           }}
@@ -99,21 +148,27 @@ export function TechCarousel() {
                   </h3>
                 </div>
 
-                {/* Efecto de brillo en hover */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent"></div>
+                {/* Subtle particles effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500">
+                  <div className="absolute top-2 right-2 w-1 h-1 bg-orange-400 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-3 left-3 w-1 h-1 bg-amber-400 rounded-full animate-pulse delay-300"></div>
+                  <div className="absolute top-1/2 right-4 w-0.5 h-0.5 bg-orange-300 rounded-full animate-pulse delay-700"></div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-
-        {/* Indicador de scroll */}
-        <div className="flex justify-center mt-8">
-          <div className="flex items-center gap-2 text-zinc-500 text-sm">
-            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
-            <span>Deslizamiento automático</span>
+        
+        {/* Indicador visual de scroll en móviles */}
+        <div className="mt-6 flex justify-center items-center">
+          <div className="flex gap-1 items-center text-zinc-500 text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span>Desliza para ver más</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
           </div>
         </div>
       </div>

@@ -129,3 +129,22 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Carousel animations and utilities */
+.carousel-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+.carousel-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
